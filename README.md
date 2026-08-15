@@ -31,22 +31,49 @@ starting ahead of the window — the git history shows the real dates and this
 README does not pretend otherwise. See
 [Provenance and timeline](#provenance-and-timeline).
 
-Working today:
+**An x402 payment settles on Soroban testnet today.** An agent fetches a paid
+resource, the server refuses with a 402, `vellar-sdk`'s own x402 client builds
+and signs the SEP-41 transfer, our facilitator simulates it and enforces its fee
+ceiling, and a sponsored transaction closes on testnet:
 
-- **The gateway** — all nine routes vellar-sdk calls, with the wire contract
-  transcribed from the SDK's own HTTP clients and held in place by 25 tests.
-  Submission and policy deployment run through seams that refuse with a typed
-  `503 not_configured` until a relayer key and policy WASM are supplied, so no
-  route silently pretends to have reached the network.
+```
+  1. agent fetches a paid resource
+  server             402 payment required
 
-Not built yet: the self-hosted facilitator, the policy and agent-key flows, the
-governor bridge, the agent, and the demo.
+  2. settled
+  paid                 yes
+  amount               0.1 XLM
+  tx                   c6594931c66240e1f49da390a9822b8556f2f2875f67426060ef1c252ce97604
+  elapsed              6.6s
+  resource             {"report":"Q3 supplier risk index","rows":1284}
+
+  3. the fee ceiling
+  quoted fee           30,591 stroops
+  hosted (50,000)      allows it
+  ceiling (30,590)     refuses it
+```
+
+Verified on-chain — [`beeb5774…`](https://stellar.expert/explorer/testnet/tx/beeb5774590ab95a75d454c6173078585eb23156cc374799a49819aa1fcf127b)
+settled in ledger 4155333 with 20,554 stroops of fee paid by the sponsor.
 
 ```sh
 npm install
-npm test          # 25 tests, no network
-npm run gateway   # http://localhost:8787
+npm test              # 48 tests, no network
+npm run demo:x402     # the flow above, against live testnet
+npm run testnet:check # simulate a transfer, print the network's fee quote
+npm run gateway       # http://localhost:8787
 ```
+
+**What is not built.** The second key. The payer above is a classic ed25519
+account, not a passkey smart wallet, so no spending-limit policy runs inside
+`__check_auth` and nothing caps the spend on-chain. Also absent: the governor
+bridge, the signed ledger, and the agent itself.
+
+Two blockers stand between here and the second key, and neither is solved by
+writing more of our own code. `agents.mint` and `policies.deploy` are
+passkey-signed wallet-admin actions — WebAuthn, browser-only, with no
+silent-signing path — so they cannot run from a script. And deploying a policy
+instance is our gateway's job, which needs Vellar's policy contract WASM.
 
 ## Why two keys
 
@@ -117,14 +144,32 @@ Must CORS-allow the app origin.
 
 ### 2. Self-hosted x402 facilitator
 
-Running a policy inside `__check_auth` costs more resource fee than a plain
-transfer. Hosted facilitators cap the fee they sponsor — x402.org's default
-ceiling is **50,000 stroops** — so every policy-governed payment fails against
-the default facilitator. Since policy-governed payments are the entire point
-here, the facilitator is self-hosted with a raised ceiling.
+Built, and the reason it is self-hosted is worth stating carefully, because the
+measurement changed the claim.
 
-This is the single most likely thing to sink a weekend build, which is why it
-is stood up first.
+Running a policy inside `__check_auth` costs more resource fee than a plain
+transfer, and hosted facilitators cap the fee they sponsor — x402.org's default
+ceiling is **50,000 stroops**. The inference is that a policy-governed payment
+fails there.
+
+What we have actually measured is the floor, not the multiplier. A plain
+SEP-41 transfer simulates at **~23,500 stroops**, and the payment settled above
+quoted **30,591** — both comfortably inside the hosted ceiling. So the overhead
+of running a policy has to exceed roughly **1.6×** to break it. Vellar documents
+that it does; we cannot confirm it until a policy is attached to a real smart
+wallet, and this repository does not claim otherwise.
+
+The mechanism itself is proven either way: `npm run demo:x402` exercises the
+ceiling against a real fee quote and shows the same payment allowed above it and
+refused below it.
+
+The facilitator also rebuilds before submitting, which is what a facilitator
+fundamentally is. The payer signs an *auth entry*, not an envelope — the
+envelope the client produces is sourced by a simulation account that never
+signs it. So the invocation, carrying the payer's signed auth entry verbatim, is
+lifted into a fresh transaction sourced and signed by the sponsor. The payer's
+signature still covers exactly the transfer they authorised; only the fee payer
+changes.
 
 ## Provenance and timeline
 
