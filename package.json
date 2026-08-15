@@ -14,7 +14,8 @@
     "gateway": "node --import ./tests/register-ts.mjs src/gateway/server.ts",
     "gateway:live": "node --env-file=.env --import ./tests/register-ts.mjs src/gateway/server.ts",
     "testnet:check": "node --import ./tests/register-ts.mjs src/scripts/testnet-check.ts",
-    "demo:x402": "node --import ./tests/register-ts.mjs src/scripts/x402-demo.ts"
+    "demo:x402": "node --import ./tests/register-ts.mjs src/scripts/x402-demo.ts",
+    "demo": "node --import ./tests/register-ts.mjs src/scripts/two-key-demo.ts"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",

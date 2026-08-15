@@ -31,10 +31,47 @@ starting ahead of the window — the git history shows the real dates and this
 README does not pretend otherwise. See
 [Provenance and timeline](#provenance-and-timeline).
 
-**An x402 payment settles on Soroban testnet today.** An agent fetches a paid
-resource, the server refuses with a 402, `vellar-sdk`'s own x402 client builds
-and signs the SEP-41 transfer, our facilitator simulates it and enforces its fee
-ceiling, and a sponsored transaction closes on testnet:
+**Both keys work, on Soroban testnet.** Three proposals from one agent: one
+clears both keys and settles on-chain, one is refused by the governor and never
+reaches the chain, one the governor approves and the chain refuses. All three
+land in one signed ledger.
+
+```
+  1. both keys turn
+     governor       auto
+     chain          settled
+     tx             7302fee3e903b15e71e57bdaf7606ce1c140e83908dfc5ee1095958a58029eea
+
+  2. the off-chain key refuses — the chain is never asked
+     governor       blocked
+     reason         merchant_not_allowed
+     chain asked    no
+     spent          nothing
+
+  3. the governor approves — the on-chain key refuses
+     governor       auto
+     chain          refused
+     reason         resource fee 30591 stroops exceeds this facilitator's ceiling of 1
+
+  one ledger, both authorities
+      0  governor p-1  auto
+      1  chain    p-1  auto     7302fee3e903…
+      2  governor p-2  blocked
+      3  governor p-3  auto
+      4  chain    p-3  blocked
+     chain valid    yes — 5 entries
+```
+
+Case 2 is the ordering guarantee, and it is the one worth watching: a spend the
+governor refuses costs nothing, because the chain is never asked. A test pins
+it — if that ever regresses the system still *looks* right, refusing the same
+spends, while paying fees to discover what the governor already knew.
+
+Case 3 is the second key turning. Here it is forced with an absurd fee ceiling
+rather than a real spending-limit policy, because the policy needs a passkey
+smart wallet. The path the refusal travels is the real one.
+
+**The x402 half in isolation** — `npm run demo:x402`:
 
 ```
   1. agent fetches a paid resource
@@ -58,22 +95,27 @@ settled in ledger 4155333 with 20,554 stroops of fee paid by the sponsor.
 
 ```sh
 npm install
-npm test              # 48 tests, no network
-npm run demo:x402     # the flow above, against live testnet
+npm test              # 57 tests, no network
+npm run demo          # both keys, against live testnet
+npm run demo:x402     # the x402 half in isolation
 npm run testnet:check # simulate a transfer, print the network's fee quote
 npm run gateway       # http://localhost:8787
 ```
 
-**What is not built.** The second key. The payer above is a classic ed25519
-account, not a passkey smart wallet, so no spending-limit policy runs inside
-`__check_auth` and nothing caps the spend on-chain. Also absent: the governor
-bridge, the signed ledger, and the agent itself.
+**What is not built.** The on-chain key is currently a fee ceiling standing in
+for a spending-limit policy. The payer is a classic ed25519 account, not a
+passkey smart wallet, so nothing runs inside `__check_auth` and no budget is
+enforced on-chain. The refusal path is real; the thing doing the refusing is
+not yet the policy.
 
-Two blockers stand between here and the second key, and neither is solved by
-writing more of our own code. `agents.mint` and `policies.deploy` are
-passkey-signed wallet-admin actions — WebAuthn, browser-only, with no
-silent-signing path — so they cannot run from a script. And deploying a policy
-instance is our gateway's job, which needs Vellar's policy contract WASM.
+One blocker remains, and it is a shape rather than an unknown. `agents.mint`
+and `policies.deploy` are passkey-signed wallet-admin actions — WebAuthn,
+browser-only, with no silent-signing path — so they cannot run from a script
+and need a small browser page. The policy contracts themselves are public Rust
+source in
+[Vellar-Wallet/vellar-dapp](https://github.com/Vellar-Wallet/vellar-dapp/tree/main/contracts/policy-templates)
+(`spending-limit`, `token-spending-limit`, `verified-recipient`), so the WASM
+this gateway needs to deploy an instance can be built rather than waited for.
 
 ## Why two keys
 
