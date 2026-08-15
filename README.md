@@ -108,14 +108,27 @@ passkey smart wallet, so nothing runs inside `__check_auth` and no budget is
 enforced on-chain. The refusal path is real; the thing doing the refusing is
 not yet the policy.
 
-One blocker remains, and it is a shape rather than an unknown. `agents.mint`
-and `policies.deploy` are passkey-signed wallet-admin actions — WebAuthn,
-browser-only, with no silent-signing path — so they cannot run from a script
-and need a small browser page. The policy contracts themselves are public Rust
-source in
-[Vellar-Wallet/vellar-dapp](https://github.com/Vellar-Wallet/vellar-dapp/tree/main/contracts/policy-templates)
-(`spending-limit`, `token-spending-limit`, `verified-recipient`), so the WASM
-this gateway needs to deploy an instance can be built rather than waited for.
+**Vellar's spending-limit policy is installed on testnet.**
+
+| | |
+| --- | --- |
+| wasm hash | `5b18e66720694ea14764d7145ed6f3c04927744a3da31e28513c47e0f45ca733` |
+| install tx | [`d0bdbff3…`](https://stellar.expert/explorer/testnet/tx/d0bdbff32744ade6254f9dca449dd0b735f9f94a02fb31cbbc0884f466a14d2b) |
+| size | 32,809 bytes |
+| source | [Vellar-Wallet/vellar-dapp](https://github.com/Vellar-Wallet/vellar-dapp/tree/main/contracts/policy-templates/spending-limit) (Apache-2.0) |
+
+Built from source rather than vendored — `npm run policy:build` fetches and
+compiles it against their pinned toolchain, so nothing of theirs is copied in
+here and the provenance of the bytes stays obvious. The hash is the sha256 of
+the file, so it can be verified locally without trusting the installer.
+
+Installing cost **21,312,598 stroops** (~2.13 XLM), one time. Worth knowing
+before doing it on mainnet.
+
+One blocker remains, and it is a shape rather than an unknown. `addPolicy` and
+`addEd25519` — behind `policies.deploy` and `agents.mint` — are passkey-signed
+wallet-admin actions. WebAuthn, browser-only, no silent-signing path. They need
+a small browser page; they cannot run from a script.
 
 ## Why two keys
 
