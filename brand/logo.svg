@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Two-Key">
+  <title>Two-Key</title>
+  <desc>Two keyholes, lit in two different colours: a spend is a reflex only when both keys turn.</desc>
+
+  <defs>
+    <linearGradient id="tk-ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#131A2E"/>
+      <stop offset="1" stop-color="#080C18"/>
+    </linearGradient>
+
+    <!-- Off-chain: the governor decides whether the spend should happen. -->
+    <linearGradient id="tk-left" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC978"/>
+      <stop offset="1" stop-color="#F0912B"/>
+    </linearGradient>
+
+    <!-- On-chain: the policy decides whether it can. -->
+    <linearGradient id="tk-right" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7BF3DC"/>
+      <stop offset="1" stop-color="#22B99E"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#tk-ground)"/>
+  <rect x="20" y="20" width="472" height="472" rx="94" fill="none" stroke="#FFFFFF" stroke-opacity="0.09" stroke-width="2"/>
+
+  <!-- Two independent authorities. Neither trusts the other. -->
+  <line x1="256" y1="150" x2="256" y2="362" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="2"/>
+
+  <!-- Left keyhole. One silhouette, waisted, so it reads as a keyhole rather
+       than a circle sitting on a stem. -->
+  <path fill="url(#tk-left)"
+        d="M126 202 a50 50 0 1 1 100 0 C226 231 198 238 194 258 L214 356 L138 356 L158 258 C154 238 126 231 126 202 Z"/>
+
+  <!-- Right keyhole -->
+  <path fill="url(#tk-right)"
+        d="M286 202 a50 50 0 1 1 100 0 C386 231 358 238 354 258 L374 356 L298 356 L318 258 C314 238 286 231 286 202 Z"/>
+</svg>

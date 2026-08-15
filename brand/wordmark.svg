@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 360" width="1360" height="360" role="img" aria-label="Two-Key">
+  <title>Two-Key</title>
+
+  <defs>
+    <linearGradient id="wm-ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#131A2E"/>
+      <stop offset="1" stop-color="#080C18"/>
+    </linearGradient>
+    <linearGradient id="wm-left" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC978"/>
+      <stop offset="1" stop-color="#F0912B"/>
+    </linearGradient>
+    <linearGradient id="wm-right" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7BF3DC"/>
+      <stop offset="1" stop-color="#22B99E"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1360" height="360" fill="url(#wm-ground)"/>
+
+  <!-- Mark, scaled from the 512 badge -->
+  <g transform="translate(60 60) scale(0.4688)">
+    <rect width="512" height="512" rx="112" fill="#0A0F1F"/>
+    <rect x="20" y="20" width="472" height="472" rx="94" fill="none" stroke="#FFFFFF" stroke-opacity="0.09" stroke-width="4"/>
+    <line x1="256" y1="150" x2="256" y2="362" stroke="#FFFFFF" stroke-opacity="0.10" stroke-width="4"/>
+    <path fill="url(#wm-left)"
+          d="M126 202 a50 50 0 1 1 100 0 C226 231 198 238 194 258 L214 356 L138 356 L158 258 C154 238 126 231 126 202 Z"/>
+    <path fill="url(#wm-right)"
+          d="M286 202 a50 50 0 1 1 100 0 C386 231 358 238 354 258 L374 356 L298 356 L318 258 C314 238 286 231 286 202 Z"/>
+  </g>
+
+  <text x="352" y="196"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-size="112" font-weight="700" letter-spacing="2" fill="#F4F6FB">TWO-KEY</text>
+
+  <text x="356" y="256"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-size="34" font-weight="400" letter-spacing="1.5" fill="#8A97B4">A spend is a reflex only when both keys turn.</text>
+</svg>
