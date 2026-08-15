@@ -1,0 +1,21 @@
+{
+  "name": "two-key",
+  "version": "0.1.0",
+  "description": "A spend is a reflex only when both keys turn.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test --import ./tests/register-ts.mjs \"tests/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "gateway": "node --import ./tests/register-ts.mjs src/gateway/server.ts",
+    "gateway:live": "node --env-file=.env --import ./tests/register-ts.mjs src/gateway/server.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "typescript": "^5.9.3"
+  }
+}

@@ -26,12 +26,27 @@ Stellar / Soroban.
 
 ## Status
 
-**Pre-event scaffolding.** The VELLAR X STELLAR HACKATHON runs **Aug 26–30, 2026**.
+Built for the VELLAR X STELLAR HACKATHON (**Aug 26–30, 2026**), with work
+starting ahead of the window — the git history shows the real dates and this
+README does not pretend otherwise. See
+[Provenance and timeline](#provenance-and-timeline).
 
-This repository currently contains infrastructure and design only. The product
-— the governor bridge, the agent, the x402 payment path, and the demo — is
-built during the event window. See [Provenance and timeline](#provenance-and-timeline)
-for exactly what predates the event and what does not.
+Working today:
+
+- **The gateway** — all nine routes vellar-sdk calls, with the wire contract
+  transcribed from the SDK's own HTTP clients and held in place by 25 tests.
+  Submission and policy deployment run through seams that refuse with a typed
+  `503 not_configured` until a relayer key and policy WASM are supplied, so no
+  route silently pretends to have reached the network.
+
+Not built yet: the self-hosted facilitator, the policy and agent-key flows, the
+governor bridge, the agent, and the demo.
+
+```sh
+npm install
+npm test          # 25 tests, no network
+npm run gateway   # http://localhost:8787
+```
 
 ## Why two keys
 
@@ -115,25 +130,26 @@ is stood up first.
 
 Stated plainly, because the git history is public and judges read it.
 
-**Predates the event, disclosed:**
+**Carried in from prior work:**
 
 - The spend governor — a pure `route()` function over (proposal, policy,
   mandates, grounding, clock), with 78 passing tests — originates in
   [icohangar-ops/metabospend](https://github.com/icohangar-ops/metabospend)
   (MIT, published Aug 3 2026, built for a prior hackathon). It is reused here
-  under its own licence and adapted to on-chain enforcement.
-- This scaffolding, the gateway, and the facilitator (Aug 2026, pre-window).
+  under its own licence and adapted to on-chain enforcement. Its lane model —
+  `auto` / `approval` / `blocked` — becomes the off-chain key described above.
 
-**Built during the event window (Aug 26–30 2026):**
+**Written for this event, starting before the window opened:**
 
-- The Vellar integration: policy generation and deploy, agent-key minting, the
-  x402 payment path.
-- The bridge between the governor's decision and on-chain settlement, including
-  reconciling an on-chain `PaymentRejectedError` into the same audit trail as
-  an off-chain refusal.
-- The agent, the demo, and the documentation of both.
+- Everything else in this repository, beginning with the gateway (Aug 15 2026).
+- The Vellar layer specifically — policy generation and deploy, agent-key
+  minting, the x402 payment path, and the bridge that reconciles an on-chain
+  `PaymentRejectedError` into the same audit trail as an off-chain refusal — is
+  new here and carried in from nothing.
 
-Nothing about the Vellar layer is carried in from prior work.
+The commit dates are what they are, and are stated here rather than left to be
+discovered. If the event requires all work inside Aug 26–30, this repository
+does not meet that bar and says so plainly.
 
 ## Licence
 
