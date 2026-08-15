@@ -12,10 +12,15 @@
     "test": "node --test --import ./tests/register-ts.mjs \"tests/*.test.ts\"",
     "typecheck": "tsc --noEmit",
     "gateway": "node --import ./tests/register-ts.mjs src/gateway/server.ts",
-    "gateway:live": "node --env-file=.env --import ./tests/register-ts.mjs src/gateway/server.ts"
+    "gateway:live": "node --env-file=.env --import ./tests/register-ts.mjs src/gateway/server.ts",
+    "testnet:check": "node --import ./tests/register-ts.mjs src/scripts/testnet-check.ts"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^16.2.0",
+    "vellar-sdk": "^0.6.0"
   }
 }
