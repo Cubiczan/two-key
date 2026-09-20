@@ -254,3 +254,22 @@ does not meet that bar and says so plainly.
 ## Licence
 
 MIT — see [LICENSE](LICENSE).
+
+## Propagation notes (wave B)
+
+- **Row 7 (Sentinel-style circuit breaker) — reversed.** The reversal
+  condition fires: Sentinel needs a dense, rolling action stream with
+  correlated-failure structure to detect, while two-key's gateway acts on
+  one policy-vetted payment request per submission
+  (`src/gateway/router.ts` → `src/gateway/submitter.ts`) — too sparse for
+  autocorrelation-based halting. Reopens if the gateway gains a
+  high-frequency autonomous action stream.
+- **Row 9 (deny-as-audit-event) — reversed.** The row targets contracts that
+  revert mid-execution and lose the denial; two-key already denies upstream
+  of any transaction: the off-chain governor
+  (`src/governor/route.ts`, `src/governor/money.ts`) and gateway policies
+  (`src/gateway/policies.ts`, Vellar spending-limit templates) reject before
+  `src/gateway/submitter.ts` ever submits, and the deny-first audit trail is
+  the gateway's own log. A denial never becomes a reverted on-chain event
+  here, so there is no on-chain denial surface to record. Reopens if
+  enforcement moves into a Soroban contract that can fail mid-execution.
